@@ -1,0 +1,46 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
+
+// AUTH
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
+Route::resource('users', UserController::class)->middleware('auth');
+
+
+// DASHBOARD + FITUR TAMBAHAN
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard/data', [DashboardController::class, 'chartData']);
+    Route::get('/dashboard/stok-kategori', [DashboardController::class, 'stokPerKategori']);
+
+    // MASTER DATA
+    Route::resource('kategori', KategoriController::class);
+    Route::resource('supplier', SupplierController::class);
+    Route::resource('barang', BarangController::class)->except(['show']);
+    Route::resource('transaksi', TransaksiController::class);
+    Route::post('/barang/import', [BarangController::class, 'import'])->name('barang.import')->middleware('auth');
+    Route::get('/barang/template-excel', [App\Http\Controllers\BarangController::class, 'downloadTemplate'])->name('barang.template')->middleware('auth');
+
+
+    // LAPORAN
+    Route::prefix('laporan')->group(function () {
+        Route::get('/stok', [LaporanController::class, 'stok'])->name('laporan.stok');
+        Route::get('/transaksi', [LaporanController::class, 'transaksi'])->name('laporan.transaksi');
+        Route::get('/stok/pdf', [LaporanController::class, 'exportStokPDF'])->name('laporan.stok.pdf');
+        Route::get('/stok/excel', [LaporanController::class, 'exportStokExcel'])->name('laporan.stok.excel');
+        Route::get('/transaksi/pdf', [LaporanController::class, 'exportTransaksiPDF'])->name('laporan.transaksi.pdf');
+        Route::get('/transaksi/excel', [LaporanController::class, 'exportTransaksiExcel'])->name('laporan.transaksi.excel');
+    });
+});
