@@ -17,6 +17,7 @@
                 <th>Kategori</th>
                 <th>Kode</th>
                 <th>Stok</th>
+                <th>deskripsi</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,7 @@
                 <td>{{ $item->kategori->nama ?? '-' }}</td>
                 <td>{{ $item->kode }}</td>
                 <td>{{ $item->stok }}</td>
+                <td>{{ $item->deskripsi }}</td>
             </tr>
             @endforeach
         </tbody>

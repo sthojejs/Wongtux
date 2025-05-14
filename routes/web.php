@@ -9,7 +9,9 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Response;
 // AUTH
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -18,6 +20,11 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::resource('users', UserController::class)->middleware('auth');
 
+Route::get('/captcha/refresh', function () {
+    return Response::json([
+        'captcha' => captcha_src('flat')  
+    ]);
+});
 
 // DASHBOARD + FITUR TAMBAHAN
 Route::middleware(['auth'])->group(function () {
@@ -44,3 +51,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi/excel', [LaporanController::class, 'exportTransaksiExcel'])->name('laporan.transaksi.excel');
     });
 });
+
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
+Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
+Route::get('/profile/password', [PasswordController::class, 'edit'])->name('password.edit')->middleware('auth');
+Route::post('/profile/password', [PasswordController::class, 'update'])->name('password.update')->middleware('auth');
+

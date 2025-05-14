@@ -35,9 +35,7 @@
         .form-control {
             border: 1px solid #ced4da;
             border-radius: 6px;
-            padding: 10px 30px 10px 10px; 
-            transition: border-color 0.2s ease;
-        stext: nowrap;
+            padding: 10px 30px 10px 10px;
         }
         .form-control:focus {
             border-color: #4a90e2;
@@ -53,7 +51,6 @@
             border-radius: 6px;
             padding: 10px;
             font-weight: 500;
-            transition: background-color 0.2s ease;
         }
         .btn-primary:hover {
             background-color: #357abd;
@@ -64,25 +61,15 @@
         .password-toggle {
             position: absolute;
             right: 10px;
-            top: 73%; 
+            top: 73%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #6c757d;
-            font-size: 0.8rem; 
+            font-size: 0.8rem;
         }
         .alert {
             border-radius: 6px;
             font-size: 0.9rem;
-        }
-        a {
-            color: #4a90e2;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .text-muted {
-            font-size: 0.85rem;
         }
         @media (max-width: 576px) {
             .card {
@@ -92,67 +79,91 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Login</h4>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Login</h4>
 
-                        @if(session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ session('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
 
-                        <form method="POST" action="/login" id="loginForm">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" name="email" id="email" class="form-control" required autofocus
-                                       placeholder="Masukkan email">
-                                @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="mb-3 password-container">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" name="password" id="password" class="form-control" required
-                                       placeholder="Masukkan kata sandi">
-                                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
-                                @error('password')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Masuk</button>
-                        </form>
+                    <form method="POST" action="/login" id="loginForm">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" required autofocus placeholder="Masukkan email">
+                            @error('email')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
-                        <p class="text-center mt-3 mb-0">
-                            Belum punya akun? <a href="/register">Daftar di sini</a>
-                        </p>
+                        <div class="mb-3 password-container">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" id="password" class="form-control" required placeholder="Masukkan kata sandi">
+                            <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                            @error('password')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                    <div class="mb-3">
+                        <label for="captcha" class="form-label">Captcha</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="{{ captcha_src('flat') }}" alt="captcha" id="captchaImage">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="reloadCaptcha">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                        <input type="text" name="captcha" class="form-control mt-2" required>
+                        @error('captcha')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Masuk</button>
+                    </form>
+
+                    <p class="text-center mt-3 mb-0">
+                        Belum punya akun? <a href="/register">Daftar di sini</a>
+                    </p>
                 </div>
-                <p class="text-center text-muted mt-3">PT WongTux © {{ date('Y') }}</p>
             </div>
+            <p class="text-center text-muted mt-3">PT WongTux © {{ date('Y') }}</p>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('togglePassword').addEventListener('click', function () {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = this;
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        });
-    </script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = this;
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    });
+
+    document.getElementById('reloadCaptcha').addEventListener('click', function () {
+        fetch('/captcha/refresh')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('captchaImage').src = data.captcha;
+            });
+    });
+</script>
 </body>
 </html>

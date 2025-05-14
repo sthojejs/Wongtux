@@ -9,18 +9,28 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function showLogin() {
-        return view('auth.login');
-    }
-
-    public function login(Request $request) {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
+    public function showLogin()
+    {
+        if (Auth::check()) {
             return redirect('/dashboard');
         }
 
-        return back()->with('error', 'Email atau password salah');
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'captcha' => 'required|captcha',
+        ]);
+
+        if (Auth::attempt($request->only('email', 'password'))) {
+            return redirect('/dashboard');
+        }
+
+        return back()->with('error', 'Email, password, atau captcha salah');
     }
 
 

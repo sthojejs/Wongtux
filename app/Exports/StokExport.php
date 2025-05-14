@@ -9,10 +9,10 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class StokExport implements FromCollection, WithHeadings
 {
     public function collection() {
-        return Barang::select('nama', 'kategori', 'kode', 'stok')->get();
+        return Barang::select('nama', 'kategori_id', 'kode', 'stok', 'deskripsi')->get();
     }
 
     public function headings(): array {
-        return ['Nama', 'Kategori', 'Kode', 'Stok'];
+        return ['Nama', 'Kategori_id', 'Kode', 'Stok', 'deskripsi'];
     }
 }
