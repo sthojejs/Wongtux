@@ -40,6 +40,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/barang/import', [BarangController::class, 'import'])->name('barang.import')->middleware('auth');
     Route::get('/barang/template-excel', [App\Http\Controllers\BarangController::class, 'downloadTemplate'])->name('barang.template')->middleware('auth');
 
+    Route::get('/barang/{id}/stok', function ($id) {
+    $barang = \App\Models\Barang::find($id);
+    return response()->json(['stok' => $barang->stok ?? 0]);
+});
+
 
     // LAPORAN
     Route::prefix('laporan')->group(function () {
@@ -56,4 +61,3 @@ Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')
 Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 Route::get('/profile/password', [PasswordController::class, 'edit'])->name('password.edit')->middleware('auth');
 Route::post('/profile/password', [PasswordController::class, 'update'])->name('password.update')->middleware('auth');
-
