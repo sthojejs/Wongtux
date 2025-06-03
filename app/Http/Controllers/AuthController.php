@@ -23,16 +23,15 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'captcha' => 'required|captcha',
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
             return redirect('/dashboard');
         }
 
-        return back()->with('error', 'Email, password, atau captcha salah');
+        // Ubah pesan error karena captcha sudah dihapus
+        return back()->with('error', 'Email atau password salah');
     }
-
 
     public function showRegister() {
         return view('auth.register');

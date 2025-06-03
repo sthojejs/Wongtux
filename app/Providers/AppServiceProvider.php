@@ -18,11 +18,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        if ($this->app->environment('production') || config('app.force_https')) {
-            URL::forceScheme('https');
-            $this->app['request']->server->set('HTTPS', 'on');
-        }
+public function boot(): void
+{
+    if (config('app.force_https')) {
+        URL::forceScheme('https');
+        $this->app['request']->server->set('HTTPS', 'on');
     }
+}
+
+
 }

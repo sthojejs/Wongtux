@@ -112,20 +112,6 @@
                             @enderror
                         </div>
 
-                    <div class="mb-3">
-                        <label for="captcha" class="form-label">Captcha</label>
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="{{ captcha_src('flat') }}" alt="captcha" id="captchaImage">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" id="reloadCaptcha">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-                        </div>
-                        <input type="text" name="captcha" class="form-control mt-2" required>
-                        @error('captcha')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                         <button type="submit" class="btn btn-primary w-100">Masuk</button>
                     </form>
 
@@ -155,14 +141,6 @@
             toggleIcon.classList.remove('fa-eye-slash');
             toggleIcon.classList.add('fa-eye');
         }
-    });
-
-    document.getElementById('reloadCaptcha').addEventListener('click', function () {
-        fetch('/captcha/refresh')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('captchaImage').src = data.captcha;
-            });
     });
 </script>
 </body>

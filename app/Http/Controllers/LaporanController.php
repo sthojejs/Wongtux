@@ -13,10 +13,22 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
-    public function stok() {
-        $barang = Barang::all();
-        return view('laporan.stok', compact('barang'));
+public function stok(Request $request) {
+    $query = Barang::with('kategori');
+
+    if ($request->kategori) {
+        $query->where('kategori_id', $request->kategori);
     }
+
+    if ($request->search) {
+        $query->where('nama', 'like', '%' . $request->search . '%');
+    }
+
+    $barang = $query->get();
+    $kategori = \App\Models\Kategori::all();
+
+    return view('laporan.stok', compact('barang', 'kategori'));
+}
 
 public function transaksi(Request $request)
 {

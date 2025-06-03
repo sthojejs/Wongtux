@@ -12,7 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Response;
-// AUTH
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister']);
@@ -20,19 +20,13 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::resource('users', UserController::class)->middleware('auth');
 
-Route::get('/captcha/refresh', function () {
-    return Response::json([
-        'captcha' => captcha_src('flat')  
-    ]);
-});
 
-// DASHBOARD + FITUR TAMBAHAN
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/dashboard/data', [DashboardController::class, 'chartData']);
     Route::get('/dashboard/stok-kategori', [DashboardController::class, 'stokPerKategori']);
 
-    // MASTER DATA
+   
     Route::resource('kategori', KategoriController::class);
     Route::resource('supplier', SupplierController::class);
     Route::resource('barang', BarangController::class)->except(['show']);
@@ -45,8 +39,7 @@ Route::middleware(['auth'])->group(function () {
     return response()->json(['stok' => $barang->stok ?? 0]);
 });
 
-
-    // LAPORAN
+    
     Route::prefix('laporan')->group(function () {
         Route::get('/stok', [LaporanController::class, 'stok'])->name('laporan.stok');
         Route::get('/transaksi', [LaporanController::class, 'transaksi'])->name('laporan.transaksi');
@@ -61,3 +54,4 @@ Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')
 Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 Route::get('/profile/password', [PasswordController::class, 'edit'])->name('password.edit')->middleware('auth');
 Route::post('/profile/password', [PasswordController::class, 'update'])->name('password.update')->middleware('auth');
+

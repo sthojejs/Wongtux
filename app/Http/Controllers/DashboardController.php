@@ -6,45 +6,118 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Barang;
 use App\Models\Transaksi;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $totalBarang = Barang::count();
-        $totalStok   = Barang::sum('stok');
-        $masuk       = Transaksi::where('jenis', 'masuk')->sum('jumlah');
-        $keluar      = Transaksi::where('jenis', 'keluar')->sum('jumlah');
+{
+    $now = Carbon::now();
+    $lastMonth = $now->copy()->subMonth();
 
-        // Barang dengan stok kurang dari 10
-        $stokMinim = Barang::where('stok', '<', 10)->get();
+    // 📦 Total Barang dan Pertumbuhan
+    $totalBarang = Barang::count();
+    $barangBulanLalu = Barang::whereMonth('created_at', $lastMonth->month)->count();
+    $barangGrowth = $barangBulanLalu > 0 ? round((($totalBarang - $barangBulanLalu) / $barangBulanLalu) * 100, 1) : 0;
 
-        return view('dashboard', compact(
-            'totalBarang', 'totalStok', 'masuk', 'keluar', 'stokMinim'
-        ));
-    }
+    // 📊 Total Stok dan Pertumbuhan
+    $totalStok = Barang::sum('stok');
+    $stokBulanLalu = Barang::whereMonth('updated_at', $lastMonth->month)->sum('stok');
+    $stokGrowth = $stokBulanLalu > 0 ? round((($totalStok - $stokBulanLalu) / $stokBulanLalu) * 100, 1) : 0;
 
+    // ✅ Barang Masuk dan Pertumbuhan
+    $masuk = Transaksi::where('jenis', 'masuk')->sum('jumlah');
+    $masukBulanLalu = Transaksi::where('jenis', 'masuk')->whereMonth('created_at', $lastMonth->month)->sum('jumlah');
+    $masukGrowth = $masukBulanLalu > 0 ? round((($masuk - $masukBulanLalu) / $masukBulanLalu) * 100, 1) : 0;
 
-    public function chartData()
-    {
-        $data = DB::table('transaksi')
-            ->selectRaw("MONTH(created_at) as bulan, jenis, SUM(jumlah) as total")
-            ->groupByRaw('bulan, jenis')
-            ->get();
+    // ❌ Barang Keluar dan Pertumbuhan
+    $keluar = Transaksi::where('jenis', 'keluar')->sum('jumlah');
+    $keluarBulanLalu = Transaksi::where('jenis', 'keluar')->whereMonth('created_at', $lastMonth->month)->sum('jumlah');
+    $keluarGrowth = $keluarBulanLalu > 0 ? round((($keluar - $keluarBulanLalu) / $keluarBulanLalu) * 100, 1) : 0;
 
-        $chartData = [
-            'labels' => [],
-            'masuk' => array_fill(1, 12, 0),
-            'keluar' => array_fill(1, 12, 0)
-        ];
+    // ⚠️ Stok Menipis
+    $stokMinim = Barang::where('stok', '<', 5)->get();
 
-        foreach ($data as $d) {
-            $chartData['labels'][$d->bulan] = date('F', mktime(0, 0, 0, $d->bulan, 10));
-            $chartData[$d->jenis][$d->bulan] = $d->total;
+    // 🕒 Aktivitas Terakhir
+    $recentAktivitas = Transaksi::with(['barang', 'user'])
+        ->latest()
+        ->take(5)
+        ->get();
+
+    return view('dashboard', compact(
+        'totalBarang', 'barangGrowth',
+        'totalStok', 'stokGrowth',
+        'masuk', 'masukGrowth',
+        'keluar', 'keluarGrowth',
+        'stokMinim', 'recentAktivitas'
+    ));
+}
+
+public function chartData(Request $request)
+{
+    $range = $request->query('range', 'day');
+    $now = now();
+
+    $chartData = [
+        'labels' => [],
+        'masuk' => [],
+        'keluar' => []
+    ];
+
+    if ($range === 'day') {
+        // Hari Ini per jam (0-23)
+        for ($i = 0; $i < 24; $i++) {
+            $label = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
+            $chartData['labels'][] = $label;
+
+            $chartData['masuk'][] = Transaksi::where('jenis', 'masuk')
+                ->whereBetween('created_at', [$now->copy()->startOfDay()->addHours($i), $now->copy()->startOfDay()->addHours($i + 1)])
+                ->sum('jumlah');
+
+            $chartData['keluar'][] = Transaksi::where('jenis', 'keluar')
+                ->whereBetween('created_at', [$now->copy()->startOfDay()->addHours($i), $now->copy()->startOfDay()->addHours($i + 1)])
+                ->sum('jumlah');
         }
+    } elseif ($range === 'month') {
+        // Bulan Ini per hari
+        $daysInMonth = $now->daysInMonth;
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $label = $i;
+            $chartData['labels'][] = $label;
 
-        return response()->json($chartData);
+            $chartData['masuk'][] = Transaksi::where('jenis', 'masuk')
+                ->whereDay('created_at', $i)
+                ->whereMonth('created_at', $now->month)
+                ->whereYear('created_at', $now->year)
+                ->sum('jumlah');
+
+            $chartData['keluar'][] = Transaksi::where('jenis', 'keluar')
+                ->whereDay('created_at', $i)
+                ->whereMonth('created_at', $now->month)
+                ->whereYear('created_at', $now->year)
+                ->sum('jumlah');
+        }
+    } else {
+        // Tahun Ini per bulan
+        for ($i = 1; $i <= 12; $i++) {
+            $label = date('F', mktime(0, 0, 0, $i, 10));
+            $chartData['labels'][] = $label;
+
+            $chartData['masuk'][] = Transaksi::where('jenis', 'masuk')
+                ->whereMonth('created_at', $i)
+                ->whereYear('created_at', $now->year)
+                ->sum('jumlah');
+
+            $chartData['keluar'][] = Transaksi::where('jenis', 'keluar')
+                ->whereMonth('created_at', $i)
+                ->whereYear('created_at', $now->year)
+                ->sum('jumlah');
+        }
     }
+
+    return response()->json($chartData);
+}
+
 
     public function stokPerKategori()
     {
@@ -54,12 +127,9 @@ class DashboardController extends Controller
             ->groupBy('kategori.nama')
             ->get();
 
-        $labels = $data->pluck('kategori');
-        $values = $data->pluck('total_stok');
-
         return response()->json([
-            'labels' => $labels,
-            'data' => $values
+            'labels' => $data->pluck('kategori'),
+            'data' => $data->pluck('total_stok')
         ]);
     }
 }

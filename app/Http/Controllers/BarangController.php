@@ -16,8 +16,8 @@ class BarangController extends Controller
     public function index()
     {
         $barang = Barang::with('kategori')->get();
-        return view('barang.index', compact('barang'));
 
+        return view('barang.index', compact('barang'));
     }
 
     public function import(Request $request)
@@ -32,13 +32,13 @@ class BarangController extends Controller
 
         if (!empty($failedKategori)) {
             return redirect()->route('barang.index')
-                ->with('warning', 'Beberapa data tidak diimport karena kategori_id berikut tidak ditemukan: ' . implode(', ', $failedKategori));
+                ->with('warning', 'Beberapa data tidak diimpor karena kategori_id berikut tidak ditemukan: ' . implode(', ', $failedKategori));
         }
 
-        return redirect()->route('barang.index')->with('success', 'Data barang berhasil diimport!');
+        return redirect()->route('barang.index')->with('success', 'Data barang berhasil diimpor!');
     }
 
-        public function downloadTemplate()
+    public function downloadTemplate()
     {
         return Excel::download(new class implements FromCollection, WithHeadings {
             public function collection()
@@ -56,16 +56,17 @@ class BarangController extends Controller
     public function create()
     {
         $kategori = Kategori::all();
+
         return view('barang.create', compact('kategori'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
+            'nama'        => 'required',
             'kategori_id' => 'required|exists:kategori,id',
-            'kode' => 'required|unique:barang',
-            'stok' => 'required|numeric'
+            'kode'        => 'required|unique:barang',
+            'stok'        => 'required|numeric',
         ]);
 
         Barang::create($request->all());
@@ -77,6 +78,7 @@ class BarangController extends Controller
     {
         $barang = Barang::findOrFail($id);
         $kategori = Kategori::all();
+
         return view('barang.edit', compact('barang', 'kategori'));
     }
 
@@ -85,10 +87,10 @@ class BarangController extends Controller
         $barang = Barang::findOrFail($id);
 
         $request->validate([
-            'nama' => 'required',
+            'nama'        => 'required',
             'kategori_id' => 'required|exists:kategori,id',
-            'kode' => 'required|unique:barang,kode,' . $barang->id,
-            'stok' => 'required|numeric'
+            'kode'        => 'required|unique:barang,kode,' . $barang->id,
+            'stok'        => 'required|numeric',
         ]);
 
         $barang->update($request->all());
