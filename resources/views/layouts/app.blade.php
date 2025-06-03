@@ -7,7 +7,7 @@
     <title>@yield('title', 'Inventaris PT WongTux')</title>
 
     <!-- Bootstrap CSS & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -21,61 +21,67 @@
             --warning-color: #f6c23e;
             --dark-color: #5a5c69;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8f9fc;
             color: #333;
             line-height: 1.6;
         }
-        
+
         .navbar {
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
             padding: 0.75rem 1rem;
             background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
         }
-        
+
         .navbar-brand {
             font-weight: 700;
             font-size: 1.25rem;
             letter-spacing: 0.05em;
         }
-        
+
         .dropdown-menu {
             border: none;
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
             border-radius: 0.35rem;
         }
-        
+
         .dropdown-item:active {
             background-color: var(--primary-color);
         }
-        
+
         .container {
             max-width: 1200px;
         }
-        
+
         .card {
             border: none;
             border-radius: 0.35rem;
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
         }
-        
+
         .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            display: block;
             border-radius: 0.35rem;
-            overflow: hidden;
         }
-        
+
         .table {
+            width: 100%;
             margin-bottom: 0;
+            table-layout: auto;
+            white-space: nowrap;
         }
-        
+
         .table th {
             background-color: #f8f9fc;
             font-weight: 600;
@@ -84,22 +90,22 @@
             letter-spacing: 0.05em;
             color: var(--secondary-color);
         }
-        
+
         @media (max-width: 768px) {
             .navbar-brand {
                 font-size: 1rem;
             }
-            
+
             .container {
                 padding-left: 15px;
                 padding-right: 15px;
             }
-            
+
             .card-body {
                 padding: 1rem;
             }
         }
-        
+
         @media print {
             body {
                 margin: 0;
@@ -134,11 +140,11 @@
                 margin: 10mm;
                 size: A4;
             }
-            
+
             .no-print, .no-print * {
                 display: none !important;
             }
-            
+
             .print-only {
                 display: block !important;
             }
@@ -156,13 +162,11 @@
                 <span class="d-inline d-sm-none">Inventaris</span>
             </a>
 
-            <!-- Toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
                 aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Navbar content -->
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     @auth
@@ -194,26 +198,25 @@
         </div>
     </nav>
 
-    <main class="container py-4">
+    <!-- Ganti container menjadi container-fluid -->
+    <main class="container-fluid py-4">
         @yield('content')
     </main>
 
     <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     @stack('scripts')
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize tooltips
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl, {
                 trigger: 'hover focus'
             });
         });
-        
-        // Print functionality
+
         document.querySelectorAll('.btn-print').forEach(btn => {
             btn.addEventListener('click', () => window.print());
         });
