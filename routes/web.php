@@ -13,13 +13,20 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Response;
 
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::resource('users', UserController::class)->middleware('auth');
-
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -54,4 +61,3 @@ Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')
 Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 Route::get('/profile/password', [PasswordController::class, 'edit'])->name('password.edit')->middleware('auth');
 Route::post('/profile/password', [PasswordController::class, 'update'])->name('password.update')->middleware('auth');
-

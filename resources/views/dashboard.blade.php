@@ -206,18 +206,8 @@
             <div class="card shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom py-3">
                     <h5 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-graph-up-arrow me-2 text-success"></i> Statistik Transaksi
+                        <i class="bi bi-graph-up-arrow me-2 text-success"></i> Statistik Transaksi Bulanan
                     </h5>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="chartRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Hari Ini
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="chartRangeDropdown">
-                            <li><a class="dropdown-item chart-range-option active" href="#" data-range="day">Hari Ini</a></li>
-                            <li><a class="dropdown-item chart-range-option" href="#" data-range="month">Tahun ini</a></li>
-                            <li><a class="dropdown-item chart-range-option" href="#" data-range="year">Bulan ini</a></li>
-                        </ul>
-                    </div>
                 </div>
                 <div class="card-body pt-0">
                     <div class="chart-container" style="position: relative; height: 300px;">
@@ -345,11 +335,10 @@
         let transaksiChart = null;
 
         /**
-         * Initialize Transaction Chart
-         * @param {string} range - Time range for data (day, week, month, etc.)
+         * Initialize Transaction Chart with monthly data
          */
-        const initTransactionChart = (range = 'day') => {
-            fetch(`/dashboard/data?range=${range}`)
+        const initTransactionChart = () => {
+            fetch('/dashboard/data?range=month')
                 .then(res => res.json())
                 .then(data => {
                     const ctx = document.getElementById('transaksiChart').getContext('2d');
@@ -504,22 +493,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             initTransactionChart();
             initStockCategoryChart();
-
-            // Add event listeners for range selector buttons
-            document.querySelectorAll('.chart-range-option').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const selectedRange = this.dataset.range;
-                    
-                    // Update UI
-                    document.getElementById('chartRangeDropdown').textContent = this.textContent;
-                    document.querySelectorAll('.chart-range-option').forEach(el => el.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Reload chart with new range
-                    initTransactionChart(selectedRange);
-                });
-            });
         });
     </script>
 @endpush

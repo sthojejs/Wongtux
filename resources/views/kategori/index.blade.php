@@ -23,33 +23,35 @@
     {{-- Card Tabel --}}
     <div class="card shadow-sm rounded-4 p-4">
         <div class="table-responsive">
-            <table class="table table-striped table-bordered align-middle mb-0">
+            <table class="table table-bordered table-striped table-sm align-middle mb-0" style="width: 100%; font-size: 0.9rem;">
                 <thead class="table-dark text-center">
                     <tr>
-                        <th>Nama</th>
-                        <th style="width: 150px;">Aksi</th>
+                        <th style="width: 75%;">Nama</th>
+                        <th style="width: 25%;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($kategori as $k)
                         <tr>
-                            <td>{{ $k->nama }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('kategori.edit', $k->id) }}" class="btn btn-warning btn-sm me-1" data-bs-toggle="tooltip" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <form action="{{ route('kategori.destroy', $k->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus kategori ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Hapus">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                            <td class="text-center py-1 px-2">{{ $k->nama }}</td>
+                            <td class="text-center py-1 px-2">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('kategori.edit', $k->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form action="{{ route('kategori.destroy', $k->id) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="2" class="text-center text-muted">Belum ada data kategori.</td>
+                            <td colspan="2" class="text-center text-muted py-1 px-2">Belum ada data kategori.</td>
                         </tr>
                     @endforelse
                 </tbody>
