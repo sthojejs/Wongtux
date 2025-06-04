@@ -398,7 +398,6 @@
                         <span>Remember me</span>
                         <input type="checkbox" id="rememberMe" name="remember" style="display: none;">
                     </div>
-                    <a href="/forgot-password" class="text-decoration-none" style="color: var(--primary-color);">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="btn btn-login btn-primary w-100 mb-3">
